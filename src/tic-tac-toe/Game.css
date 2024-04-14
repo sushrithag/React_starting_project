@@ -78,6 +78,9 @@ body {
 }
 
 .status {
+    font-size: 50px;
+    text-align: center;
+    background-color: beige;
     margin-bottom: 10px;
 }
 
@@ -90,12 +93,18 @@ body {
     margin-left: 20px;
 }
 
-@media screen and (max-width:1100px) {
+@media screen and ((max-width:1300px) or (max-height:1100px)) {
     .square {
-        --square_size: 30vw;
-        font-size: 24vw;
+        --square_size: min(24vw, 24vh);
+        font-size: min(18vw, 18vh);
         line-height: var(--square_size);
         height: var(--square_size);
         width: var(--square_size);
+    }
+}
+
+@media screen and (max-width:1300px) {
+    .game {
+        flex-direction: column;
     }
 }
