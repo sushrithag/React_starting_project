@@ -71,6 +71,16 @@ body {
     width: 340px;
 }
 
+@keyframes blink {
+    from { background-color: burlywood;}
+    to { background-color: greenyellow;}
+}
+
+.blinking {
+    /* background-color: red; */
+    animation: blink 2s linear 1 forwards;
+}
+
 .board-row:after {
     clear: both;
     content: '';

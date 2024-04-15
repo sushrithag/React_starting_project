@@ -2,10 +2,10 @@ import './Game.css'
 import { useState } from 'react'
 
 
-function Square({ square_color, square_state, onSquareClick }) {
+function Square({ square_color, square_class, square_state, onSquareClick }) {
     return (
         <button
-            className="square"
+            className={square_class}
             onClick={onSquareClick}
             style={square_color}>
             {square_state}
@@ -31,18 +31,23 @@ function Board({ square_states, move_count, handleClick }) {
 
     function CreateRow(x) {
         let square_color;
+        let square_class;
         if (square_states[x]) {
             square_color = { backgroundColor: 'burlywood' };
+            square_class = "square";
             if (winner && (winner[1].indexOf(x) !== -1)) {
-                square_color = { backgroundColor: 'cadetblue' };
+                square_color = {};
+                square_class = "square blinking"
             }
         } else {
             square_color = { backgroundColor: '#fff' };
+            square_class = "square";
         }
         return (
             <Square
                 key={x}
                 square_color={square_color}
+                square_class={square_class}
                 square_state={square_states[x]}
                 onSquareClick={() => handleClick(x)} />
         )
