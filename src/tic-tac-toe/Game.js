@@ -26,6 +26,9 @@ function Board({ square_states, move_count, handleClick }) {
             </h1>)
     } else {
         status = 'Next player is: ' + next_player;
+        if (move_count === 9) {
+            status = 'Game is Drawn.'
+        }
         status_block = (<h1 className='status'>{status}</h1>)
     }
 
@@ -73,6 +76,22 @@ export default function Game() {
     const [move_count, setMoveCount] = useState(0);
     const [history, setHistory] = useState([Array(9).fill(null)]);
     const current_game_state = history[move_count];
+    // Toggle button to reverse order the moves
+    const [is_checked, setIsChecked] = useState(false);
+    const game_over = calculateWinner(current_game_state) || move_count === 9;
+    const [move_loc_history, setMoveLocHistory] = useState(Array(9).fill(null));
+
+    const move_loc_map = [
+        "(row,col): (0,0)",
+        "(row,col): (0,1)",
+        "(row,col): (0,2)",
+        "(row,col): (1,0)",
+        "(row,col): (1,1)",
+        "(row,col): (1,2)",
+        "(row,col): (2,0)",
+        "(row,col): (2,1)",
+        "(row,col): (2,2)", 
+    ]; 
 
     function onPlay(index) {
         if (calculateWinner(current_game_state) || current_game_state[index]) {
@@ -81,6 +100,9 @@ export default function Game() {
         const next_square_states = current_game_state.slice();
         next_square_states[index] = move_count % 2 === 0 ? 'X' : 'O';
         setHistory([...history.slice(0, move_count + 1), next_square_states]);
+        const new_move_loc_history = move_loc_history.slice();
+        new_move_loc_history[move_count] = index; 
+        setMoveLocHistory(new_move_loc_history);
         setMoveCount(move_count + 1);
     }
 
@@ -88,15 +110,20 @@ export default function Game() {
         setMoveCount(move_index);
     }
 
-    const moves = history.map((squares, index) => {
+    function playAgain() {
+        setMoveCount(0);
+        setHistory([Array(9).fill(null)])
+    }
+
+    let moves = history.map((squares, index) => {
         let description;
-        if (index === history.length - 1) {
-            description = "You are at move #" + index;
-        }
-        else if (index > 0) {
-            description = "Go to move #" + index
-        } else {
+        if (index > 0) {
+            description = "Go to move #" + index + 
+            " Loc: " + move_loc_map[move_loc_history[index-1]];
+        } else if (index === 0) {
             description = "Go to start of the game"
+        } else if (index === history.length - 1) {
+            
         }
         return (
             <li key={index}>
@@ -105,6 +132,25 @@ export default function Game() {
                 </button>
             </li>)
     });
+
+    if (is_checked){
+        moves.reverse();
+    }
+
+    function reOrderMoves(is_button_checked) {
+        if (is_button_checked) {
+            setIsChecked(true);
+        } else {
+            setIsChecked(false);
+        }
+    }
+
+    let play_again_button = (game_over) ?
+        (<div>
+            Game Over <br/><br/> 
+            <button onClick={() => playAgain()}>Play Again</button>
+        </div>) :
+        (<div>You are at move # {move_count+1} </div>);
 
     return (
         <div className='game'>
@@ -116,9 +162,18 @@ export default function Game() {
             </div>
             <div className='game-info'>
                 <h1>Game Moves</h1>
+                <span>Reverse-order Moves: </span>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    checked={is_checked}
+                    onChange={(e) => reOrderMoves(e.target.checked)}/>
+                  <span class="slider round"></span> 
+                </label>
                 <ol>
                     {moves}
                 </ol>
+                {play_again_button}
             </div>
         </div>
     )
